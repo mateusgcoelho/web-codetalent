@@ -1,0 +1,39 @@
+<div class="flex flex-col gap-y-1 min-w-80 h-[56px]">
+  <label [for]="name()" class="text-sm font-semibold text-slate-800">
+    {{ label() }}
+    @if (required()) {
+      <span class="text-red-500">*</span>
+    }
+  </label>
+  <div
+    class="flex items-center justify-between h-full border text-xs placeholder:text-slate-500 text-slate-600 relative rounded-md focus:border-orange-500 disabled:bg-slate-100"
+    [ngClass]="{
+      'border-red-500': formControl().errors && formSubmitted(),
+    }"
+  >
+    <select
+      [name]="name()"
+      class="h-full w-full appearance-none px-2 z-10 bg-transparent"
+      [formControl]="formControl()"
+    >
+      <option value="null" disabled selected>Selecione um item</option>
+      @for (option of options(); track $index) {
+        <option [value]="option.value">
+          <p>{{ option.label }}</p>
+        </option>
+      }
+    </select>
+
+    <lucide-icon
+      name="ChevronDown"
+      size="18"
+      class="absolute right-1.5 bottom-0.5 z-0"
+    />
+  </div>
+</div>
+@if (
+  (formControl().errors?.["required"] || formControl().errors?.["min"]) &&
+  (formControl().touched || formSubmitted())
+) {
+  <p class="text-red-500 text-xs mt-1">Selecione um valor!</p>
+}

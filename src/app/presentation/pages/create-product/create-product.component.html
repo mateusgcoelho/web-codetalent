@@ -1,0 +1,171 @@
+@if (isLoading) {
+  <loading-screen-component />
+}
+
+<header class="flex items-center justify-between p-2 border-b h-[50px]">
+  <div class="flex items-center w-52">
+    <button
+      routerLink=".."
+      class="text-orange-500 hover:bg-slate-100 p-2 rounded-xl transition-all flex items-center mr-4"
+    >
+      <lucide-icon name="arrow-big-left-dash" [size]="18" />
+    </button>
+
+    <button
+      class="text-orange-500 hover:bg-slate-100 p-2 rounded-xl transition-all flex items-center"
+      (click)="submitProductForm()"
+    >
+      <lucide-icon name="save" [size]="18" />
+    </button>
+
+    <button
+      class="text-orange-500 hover:bg-slate-100 p-2 rounded-xl transition-all flex items-center disabled:text-slate-500 disabled:cursor-not-allowed"
+      [disabled]="!product"
+      (click)="showDialogDeleteProduct()"
+    >
+      <lucide-icon name="trash" [size]="18" />
+    </button>
+  </div>
+  <h1 class="font-bold flex-1">
+    {{ product ? "Atualização de Produto" : "Cadastro de Produto" }}
+  </h1>
+  <div></div>
+</header>
+
+<form
+  [formGroup]="productForm"
+  class="p-10 max-w-screen-2xl m-auto flex items-start gap-x-4 gap-y-2 flex-wrap"
+>
+  <section class="w-full flex flex-col flex-1">
+    <div class="flex items-start gap-x-4 pb-4 gap-y-2 flex-wrap">
+      <input-component
+        name="productId"
+        label="Código"
+        placeholder="Código do produto"
+        [formControl]="getFormControl('productId')"
+        class="flex-1"
+        ngDefaultControl
+      />
+      <input-component
+        name="description"
+        label="Descrição"
+        placeholder="Descrição do produto"
+        [formControl]="getFormControl('description')"
+        class="flex-1"
+        [required]="true"
+        [formSubmitted]="productForm.touched"
+        ngDefaultControl
+      />
+      <input-component
+        name="cost"
+        label="Custo"
+        placeholder="R$ 0,00"
+        [formControl]="getFormControl('cost')"
+        [prefix]="'R$ '"
+        mask="separator.2"
+        thousandSeparator="."
+        class="flex-1"
+        ngDefaultControl
+      />
+    </div>
+
+    <div class="border rounded-md h-full flex flex-col">
+      <div class="p-2 flex items-center border-b">
+        <div
+          class="min-w-40 flex-1 justify-start text-sm text-slate-700 flex items-center gap-x-2"
+        >
+          <button
+            class="flex items-center text-orange-500 disabled:text-slate-500 disabled:cursor-not-allowed"
+            [disabled]="!product"
+            (click)="showDialogSalePrice()"
+          >
+            <lucide-icon name="plus-circle" [size]="18" />
+          </button>
+          <h1>Loja</h1>
+        </div>
+        <div class="min-w-40 flex-1 justify-start text-sm text-slate-700">
+          <h1>Preço Venda (R$)</h1>
+        </div>
+        <div class="min-w-40 flex-1 text-start text-sm text-slate-700">
+          <h1>Ações</h1>
+        </div>
+      </div>
+
+      <div class="flex flex-col">
+        @if (salePriceRows.length > 0) {
+          @for (salePriceRow of salePriceRows; track $index) {
+            <div
+              class="w-full flex items-center px-2 py-1 text-xs text-slate-600 cursor-pointer hover:bg-orange-50 hover:text-orange-500"
+              [ngClass]="{
+                'bg-slate-100': $index % 2 == 0,
+              }"
+            >
+              @for (column of salePriceRow.itens; track column) {
+                <div class="min-w-40 flex-1 flex justify-start">
+                  <h1>{{ column.label }}</h1>
+                </div>
+              }
+
+              <div class="min-w-40 flex-1 justify-start flex">
+                <div class="w-full justify-start flex gap-x-2">
+                  <lucide-icon name="edit" size="18" />
+                  <button
+                    (click)="showDialogDeleteSalePrice(salePriceRow.value)"
+                  >
+                    <lucide-icon name="trash" size="18" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        } @else {
+          <p class="text-sm text-gray-400 p-2">
+            Nenhum registro para ser exibido.
+          </p>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-y-1">
+    <span class="font-semibold text-slate-700">Imagem</span>
+
+    <div
+      class="relative border border-dashed border-slate-400 h-80 w-96 bg-slate-100 rounded-md flex items-center justify-center text-slate-400 hover:bg-slate-200 transition-all cursor-pointer"
+    >
+      <div
+        class="h-full w-full flex items-center justify-center flex-col gap-y-1"
+      >
+        <lucide-icon name="image-up" size="32" />
+        <p>Selecionar imagem de produto.</p>
+      </div>
+
+      <input
+        type="file"
+        accept="image/png, image/jpeg"
+        class="w-full h-full absolute top-0 opacity-0 cursor-pointer z-20"
+        (change)="setFileData($event)"
+        (click)="fileInput.value = ''"
+        #fileInput
+      />
+
+      @if (productForm.value.image) {
+        <img
+          [src]="productForm.value.image"
+          alt="Imagem representativa do produto"
+          class="w-full h-full absolute top-0 left-0 right-0 rounded-md z-10"
+        />
+      }
+    </div>
+
+    @if (productForm.value.image) {
+      <button
+        class="w-full rounded-md border flex items-center gap-x-2 justify-center border-orange-500 p-2 text-xs text-orange-500 font-bold transition-all hover:bg-orange-100 mt-2"
+        (click)="removePhoto()"
+      >
+        <lucide-icon name="trash" [size]="18" />
+        <p>Remover Imagem</p>
+      </button>
+    }
+  </section>
+</form>

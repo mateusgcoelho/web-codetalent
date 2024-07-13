@@ -1,0 +1,109 @@
+@if (isLoading) {
+  <loading-screen-component />
+}
+
+<header class="flex items-center justify-between p-2 border-b h-[50px]">
+  <div class="flex w-52">
+    <a
+      routerLink="/produto/cadastro"
+      class="text-orange-500 hover:bg-slate-100 p-2 rounded-xl transition-all flex items-center"
+    >
+      <lucide-icon name="plus-circle" [size]="18" />
+    </a>
+  </div>
+  <h1 class="font-bold flex-1">Consulta de Produtos</h1>
+  <div></div>
+</header>
+<main class="p-10 max-md:p-6 max-w-screen-2xl m-auto">
+  <form
+    [formGroup]="searchForm"
+    class="flex items-center gap-x-4 pb-4 flex-wrap gap-y-2"
+  >
+    <input-component
+      name="productId"
+      placeholder="Código do produto"
+      label="Código"
+      [formControl]="getFormControl('productId')"
+      ngDefaultControl
+    />
+
+    <input-component
+      name="description"
+      label="Descrição"
+      placeholder="Descrição do produto"
+      [formControl]="getFormControl('description')"
+      ngDefaultControl
+    />
+
+    <input-component
+      name="cost"
+      placeholder="Custo do produto"
+      label="Custo"
+      mask="separator.2"
+      [prefix]="'R$ '"
+      thousandSeparator="."
+      [formControl]="getFormControl('cost')"
+      ngDefaultControl
+    />
+  </form>
+
+  <div class="border rounded-md h-full flex flex-col">
+    <div class="p-2 flex items-center border-b">
+      <div class="min-w-40 flex-1 justify-start text-sm text-slate-700">
+        <h1>Código</h1>
+      </div>
+      <div class="min-w-40 flex-1 justify-start text-sm text-slate-700">
+        <h1>Descrição</h1>
+      </div>
+      <div class="min-w-40 flex-1 justify-start text-sm text-slate-700">
+        <h1>Custo (R$)</h1>
+      </div>
+      <div class="min-w-40 flex-1 text-start text-sm text-slate-700">
+        <h1>Ações</h1>
+      </div>
+    </div>
+
+    <div class="flex flex-col">
+      @if (outputFindProducts.products.length <= 0) {
+        <p class="text-sm text-gray-400 p-2">
+          Nenhum registro para ser exibido.
+        </p>
+      }
+
+      @for (product of outputFindProducts.products; track product) {
+        <button
+          class="w-full flex items-center px-2 py-1 text-xs text-slate-600 cursor-pointer hover:bg-orange-50 hover:text-orange-500"
+          [ngClass]="{
+            'bg-slate-100': $index % 2 == 0,
+          }"
+        >
+          <div class="min-w-40 flex-1 flex justify-start">
+            <h1>{{ product.formattedId }}</h1>
+          </div>
+          <div class="min-w-40 flex-1 flex justify-start">
+            <h1>{{ product.formattedDescription }}</h1>
+          </div>
+          <div class="min-w-40 flex-1 flex justify-start">
+            <h1>{{ product.formattedCost }}</h1>
+          </div>
+          <div class="min-w-40 flex-1 justify-start flex">
+            <div class="w-full justify-start flex gap-x-2">
+              <button (click)="navigateToEditProduct(product.id)">
+                <lucide-icon name="edit" size="18" />
+              </button>
+              <button (click)="showDialogDeleteProduct(product)">
+                <lucide-icon name="trash" size="18" />
+              </button>
+            </div>
+          </div>
+        </button>
+      }
+    </div>
+
+    <div
+      class="flex-1 px-4 py-2 w-full flex items-center justify-end border-t text-xs"
+    >
+      <p>Página 1</p>
+    </div>
+  </div>
+</main>
