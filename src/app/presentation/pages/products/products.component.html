@@ -38,12 +38,23 @@
 
     <input-component
       name="cost"
-      placeholder="Custo do produto"
+      placeholder="0,00"
       label="Custo"
       mask="separator.2"
       [prefix]="'R$ '"
       thousandSeparator="."
       [formControl]="getFormControl('cost')"
+      ngDefaultControl
+    />
+
+    <input-component
+      name="price"
+      placeholder="0,00"
+      label="Preço de Venda"
+      mask="separator.2"
+      [prefix]="'R$ '"
+      thousandSeparator="."
+      [formControl]="getFormControl('price')"
       ngDefaultControl
     />
   </form>
@@ -65,62 +76,55 @@
     </div>
 
     <div class="flex flex-col">
-      @if (outputFindProducts.products.length <= 0) {
+      @if (productRows.length <= 0) {
         <p class="text-sm text-gray-400 p-2">
           Nenhum registro para ser exibido.
         </p>
       }
 
-      @for (product of outputFindProducts.products; track product) {
-        <button
+      @for (row of productRows; track row) {
+        <div
           class="w-full flex items-center px-2 py-1 text-xs text-slate-600 cursor-pointer hover:bg-orange-50 hover:text-orange-500"
           [ngClass]="{
             'bg-slate-100': $index % 2 == 0,
           }"
         >
-          <div class="min-w-40 flex-1 flex justify-start">
-            <h1>{{ product.formattedId }}</h1>
-          </div>
-          <div class="min-w-40 flex-1 flex justify-start">
-            <h1>{{ product.formattedDescription }}</h1>
-          </div>
-          <div class="min-w-40 flex-1 flex justify-start">
-            <h1>{{ product.formattedCost }}</h1>
-          </div>
+          @for (column of row.itens; track column) {
+            <div class="min-w-40 flex-1 flex justify-start">
+              <h1>{{ column.label }}</h1>
+            </div>
+          }
+
           <div class="min-w-40 flex-1 justify-start flex">
             <div class="w-full justify-start flex gap-x-2">
-              <button (click)="navigateToEditProduct(product.id)">
+              <button (click)="navigateToEditProduct(row.value)">
                 <lucide-icon name="edit" size="18" />
               </button>
-              <button (click)="showDialogDeleteProduct(product)">
+              <button (click)="showDialogDeleteProduct(row.value)">
                 <lucide-icon name="trash" size="18" />
               </button>
             </div>
           </div>
-        </button>
+        </div>
       }
     </div>
 
     <div
       class="flex-1 px-4 py-2 gap-x-2 w-full flex items-center justify-end border-t text-xs"
     >
-      <button
-        class="p-1 rounded-md hover:bg-slate-50 transition-all text-orange-500 disabled:cursor-not-allowed disabled:text-slate-800"
+      <icon-button-component
+        icon="chevron-left"
         [disabled]="!hasPreviousPage"
-        (click)="previousPage()"
-      >
-        <lucide-icon name="chevron-left" size="18" />
-      </button>
+        (buttonClick)="previousPage()"
+      />
 
       <p>Página {{ page }}</p>
 
-      <button
-        class="p-1 rounded-md hover:bg-slate-50 transition-all text-orange-500 disabled:cursor-not-allowed disabled:text-slate-800"
+      <icon-button-component
+        icon="chevron-right"
         [disabled]="!hasNextPage"
-        (click)="nextPage()"
-      >
-        <lucide-icon name="chevron-right" size="18" />
-      </button>
+        (buttonClick)="nextPage()"
+      />
     </div>
   </div>
 </main>

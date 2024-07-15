@@ -18,8 +18,10 @@ import Product from '../../../domain/entities/product';
 import ProductRepositoryApi from '../../../infra/repositories/product-api.repository';
 import NumberMaskConverterUtils from '../../../shared/utils/number-mask-converter.utils';
 import { DialogDeleteComponent } from '../../components/dialog-delete/dialog-delete.component';
+import { IconButtonComponent } from '../../components/icon-button/icon-button.component';
 import { InputComponent } from '../../components/input/input.component';
 import { LoadingScreenComponent } from '../../components/loading-screen/loading-screen.component';
+import { TableItemModel } from '../../components/table/view-models/table-item.model';
 
 @Component({
   selector: 'page-products',
@@ -32,6 +34,7 @@ import { LoadingScreenComponent } from '../../components/loading-screen/loading-
     RouterLink,
     LoadingScreenComponent,
     InputComponent,
+    IconButtonComponent,
     MatDialogModule,
   ],
   providers: [
@@ -72,13 +75,18 @@ export class ProductsComponent implements OnInit {
     return this.page > 1 && this.page <= this.outputFindProducts.maxPage;
   }
 
+  productRows: TableItemModel<Product>[] = [];
+
   searchForm = this.formBuilderService.group({
     productId: [null],
     description: ['', Validators.maxLength(30)],
     cost: [null, Validators.maxLength(16)],
+    price: [null, Validators.maxLength(16)],
   });
 
-  getFormControl(value: 'productId' | 'description' | 'cost'): FormControl {
+  getFormControl(
+    value: 'productId' | 'description' | 'cost' | 'price',
+  ): FormControl {
     return this.searchForm.controls[value];
   }
 
@@ -115,6 +123,9 @@ export class ProductsComponent implements OnInit {
       ),
       page: this.page,
       perPage: this.perPage,
+      price: NumberMaskConverterUtils.convertMaskToNumber(
+        this.searchForm.value.price,
+      ),
     });
 
     if (response.isLeft()) {
@@ -123,6 +134,24 @@ export class ProductsComponent implements OnInit {
     }
 
     this.outputFindProducts = response.value;
+    this.populateProductRows();
+  }
+
+  populateProductRows(): void {
+    let rows: TableItemModel<Product>[] = [];
+
+    this.outputFindProducts.products.forEach((product) => {
+      rows.push({
+        itens: [
+          { label: product.formattedId },
+          { label: product.formattedDescription },
+          { label: product.formattedCost },
+        ],
+        value: product,
+      });
+    });
+
+    this.productRows = rows;
   }
 
   resetPage(): void {
@@ -142,10 +171,10 @@ export class ProductsComponent implements OnInit {
       });
   }
 
-  navigateToEditProduct(productId: number): void {
+  navigateToEditProduct(product: Product): void {
     this.router.navigate([`/produto/cadastro`], {
       queryParams: {
-        id: productId,
+        id: product.id,
       },
     });
   }

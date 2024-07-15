@@ -9,6 +9,7 @@ export type InputFindProducts = {
   productId?: number | undefined | null;
   description?: string | undefined | null;
   cost?: number | undefined | null;
+  price?: number | undefined | null;
   page: number;
   perPage: number;
 };
@@ -30,7 +31,6 @@ export default class FindProductsUseCase {
     input: InputFindProducts,
   ): Promise<Either<ApplicationError, OutputFindProducts>> {
     try {
-      console.log(input);
       const response = await this.productRepository.find(input);
 
       return right(response);

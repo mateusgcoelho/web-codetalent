@@ -1,0 +1,7 @@
+<button
+  class="p-1 rounded-md hover:bg-slate-50 transition-all text-orange-500 disabled:cursor-not-allowed disabled:text-slate-800"
+  [disabled]="disabled()"
+  (click)="click()"
+>
+  <lucide-icon [name]="icon()" size="18" />
+</button>

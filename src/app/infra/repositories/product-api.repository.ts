@@ -61,8 +61,10 @@ export default class ProductRepositoryApi implements ProductRepository {
 
   async assignSalePrice(input: InputAssignSalePriceProduct): Promise<void> {
     await this.httpClient.post(
-      `/products/${input.productId}/sale-price/assign`,
-      input,
+      `/products/${input.productId}/sale-price/${input.supermarketId}`,
+      {
+        salePrice: input.salePrice,
+      },
     );
   }
 
@@ -80,6 +82,7 @@ export default class ProductRepositoryApi implements ProductRepository {
     if (input.image) {
       formData.append('image', input.image!);
     }
+
     if (input.cost) {
       formData.append('cost', input.cost.toString());
     }
@@ -107,6 +110,10 @@ export default class ProductRepositoryApi implements ProductRepository {
 
     if (filter.description) {
       queryParams.description = filter.description;
+    }
+
+    if (filter.price) {
+      queryParams.price = filter.price;
     }
 
     const response = await this.httpClient.get('/products', {
