@@ -23,6 +23,7 @@
       name="productId"
       placeholder="Código do produto"
       label="Código"
+      mask="0000000"
       [formControl]="getFormControl('productId')"
       ngDefaultControl
     />
@@ -101,9 +102,25 @@
     </div>
 
     <div
-      class="flex-1 px-4 py-2 w-full flex items-center justify-end border-t text-xs"
+      class="flex-1 px-4 py-2 gap-x-2 w-full flex items-center justify-end border-t text-xs"
     >
-      <p>Página 1</p>
+      <button
+        class="p-1 rounded-md hover:bg-slate-50 transition-all text-orange-500 disabled:cursor-not-allowed disabled:text-slate-800"
+        [disabled]="!hasPreviousPage"
+        (click)="previousPage()"
+      >
+        <lucide-icon name="chevron-left" size="18" />
+      </button>
+
+      <p>Página {{ page }}</p>
+
+      <button
+        class="p-1 rounded-md hover:bg-slate-50 transition-all text-orange-500 disabled:cursor-not-allowed disabled:text-slate-800"
+        [disabled]="!hasNextPage"
+        (click)="nextPage()"
+      >
+        <lucide-icon name="chevron-right" size="18" />
+      </button>
     </div>
   </div>
 </main>

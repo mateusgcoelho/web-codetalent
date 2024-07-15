@@ -108,7 +108,9 @@
 
               <div class="min-w-40 flex-1 justify-start flex">
                 <div class="w-full justify-start flex gap-x-2">
-                  <lucide-icon name="edit" size="18" />
+                  <button (click)="showDialogSalePrice(salePriceRow.value)">
+                    <lucide-icon name="edit" size="18" />
+                  </button>
                   <button
                     (click)="showDialogDeleteSalePrice(salePriceRow.value)"
                   >

@@ -3,6 +3,7 @@ import { FilterFindProducts } from '../../domain/dtos/filter-find-products.dto';
 import { InputAssignSalePriceProduct } from '../../domain/dtos/input-assign-sale-price.dto';
 import { InputCreateProduct } from '../../domain/dtos/input-create-product.dto';
 import { InputUpdateProduct } from '../../domain/dtos/input-update-product.dto';
+import { InputUpdateSalePrice } from '../../domain/dtos/input-update-sale-price.dto';
 import OutputFindProducts from '../../domain/dtos/output-find-products.dto';
 import OutputGetProduct from '../../domain/dtos/output-get-product.dto';
 import Product from '../../domain/entities/product';
@@ -16,6 +17,15 @@ export default class ProductRepositoryApi implements ProductRepository {
     private readonly httpClient: IHttpClient,
   ) {}
 
+  async updateSalePrice(input: InputUpdateSalePrice): Promise<void> {
+    await this.httpClient.put(
+      `/products/${input.productId}/sale-price/${input.supermarketId}`,
+      {
+        salePrice: input.salePrice,
+      },
+    );
+  }
+
   async deleteSalePrice(
     productId: number,
     supermarketId: number,
@@ -25,7 +35,7 @@ export default class ProductRepositoryApi implements ProductRepository {
     );
   }
 
-  async update(input: InputUpdateProduct): Promise<void> {
+  async updateProduct(input: InputUpdateProduct): Promise<void> {
     const formData = new FormData();
 
     if (input.description) {
@@ -45,7 +55,7 @@ export default class ProductRepositoryApi implements ProductRepository {
     });
   }
 
-  async delete(productId: number): Promise<void> {
+  async deleteProduct(productId: number): Promise<void> {
     await this.httpClient.delete(`/products/${productId}`);
   }
 

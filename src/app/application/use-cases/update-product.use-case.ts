@@ -22,7 +22,7 @@ export default class UpdateProductUseCase {
     input: InputUpdateProduct,
   ): Promise<Either<ApplicationError, null>> {
     try {
-      await this.productRepository.update(input);
+      await this.productRepository.updateProduct(input);
 
       return right(null);
     } catch (error) {

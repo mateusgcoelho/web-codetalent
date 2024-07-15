@@ -30,6 +30,7 @@ export default class FindProductsUseCase {
     input: InputFindProducts,
   ): Promise<Either<ApplicationError, OutputFindProducts>> {
     try {
+      console.log(input);
       const response = await this.productRepository.find(input);
 
       return right(response);

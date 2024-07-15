@@ -10,7 +10,7 @@ import {
 @Injectable()
 export class AxiosClientAdapter implements IHttpClient {
   client: AxiosInstance = axios.create({
-    baseURL: 'http://localhost:3000/api/v1',
+    baseURL: 'http://localhost:3001/api/v1',
   });
 
   async delete(url: string, config?: IHttpClientConfig): Promise<any> {

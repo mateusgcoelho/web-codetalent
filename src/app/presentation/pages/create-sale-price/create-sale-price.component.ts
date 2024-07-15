@@ -15,6 +15,7 @@ import { RouterLink, RouterOutlet } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
 import AssignSalePriceProductUseCase from '../../../application/use-cases/assign-sale-price-product.use-case';
+import UpdateSalePriceUseCase from '../../../application/use-cases/update-sale-price.use-case';
 import ProductRepositoryApi from '../../../infra/repositories/product-api.repository';
 import NumberMaskConverterUtils from '../../../shared/utils/number-mask-converter.utils';
 import { InputComponent } from '../../components/input/input.component';
@@ -41,6 +42,7 @@ import { DialogCreateSalePriceModel } from './view-models/dialog-create-sale-pri
       useClass: ProductRepositoryApi,
     },
     AssignSalePriceProductUseCase,
+    UpdateSalePriceUseCase,
   ],
   templateUrl: './create-sale-price.component.html',
 })
@@ -49,6 +51,7 @@ export class CreateSalePriceComponent implements OnInit {
   private readonly dialogRef: MatDialogRef<CreateSalePriceComponent> =
     inject(MatDialogRef);
 
+  private readonly updateSalePriceUseCase = inject(UpdateSalePriceUseCase);
   private readonly assignSalePriceUseCase = inject(
     AssignSalePriceProductUseCase,
   );
@@ -73,6 +76,13 @@ export class CreateSalePriceComponent implements OnInit {
 
   ngOnInit(): void {
     this.supermarketOptions = this.data.supermarketOptions;
+
+    if (this.data.salePrice) {
+      this.getFormControl('supermarketId').setValue(
+        this.data.salePrice?.supermarket.id,
+      );
+      this.getFormControl('salePrice').setValue(this.data.salePrice?.salePrice);
+    }
   }
 
   closeDialog(value?: any): void {
@@ -86,6 +96,34 @@ export class CreateSalePriceComponent implements OnInit {
       return;
     }
 
+    if (this.data.salePrice) {
+      this.updateSalePrice();
+      return;
+    }
+
+    this.createSalePrice();
+  }
+
+  async updateSalePrice(): Promise<void> {
+    const response = await this.updateSalePriceUseCase.execute({
+      productId: this.data.productId,
+      supermarketId: Number(this.getFormControl('supermarketId').value),
+      salePrice: NumberMaskConverterUtils.convertMaskToNumber(
+        this.salePriceForm.value.salePrice,
+      ),
+    });
+
+    if (response.isLeft()) {
+      this.closeDialog();
+      this.toastService.error(response.value.message);
+      return;
+    }
+
+    this.closeDialog(true);
+    this.toastService.success('Preço de venda do produto atualizado.');
+  }
+
+  async createSalePrice(): Promise<void> {
     const response = await this.assignSalePriceUseCase.execute({
       productId: this.data.productId,
       supermarketId: Number(this.getFormControl('supermarketId').value),

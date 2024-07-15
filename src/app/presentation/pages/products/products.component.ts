@@ -10,7 +10,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
 import DeleteProductUseCase from '../../../application/use-cases/delete-product.use-case';
 import FindProductsUseCase from '../../../application/use-cases/find-products.use-case';
 import OutputFindProducts from '../../../domain/dtos/output-find-products.dto';
@@ -53,16 +53,24 @@ export class ProductsComponent implements OnInit {
   private readonly toastService = inject(ToastrService);
   private readonly router = inject(Router);
 
-  #page: number = 1;
-  #perPage: number = 10;
+  page: number = 1;
+  perPage: number = 10;
 
   isLoading: boolean = false;
 
   outputFindProducts: OutputFindProducts = {
     total: 0,
     products: [],
-    maxPage: 0,
+    maxPage: 1,
   };
+
+  get hasNextPage(): boolean {
+    return this.page < this.outputFindProducts.maxPage;
+  }
+
+  get hasPreviousPage(): boolean {
+    return this.page > 1 && this.page <= this.outputFindProducts.maxPage;
+  }
 
   searchForm = this.formBuilderService.group({
     productId: [null],
@@ -78,6 +86,16 @@ export class ProductsComponent implements OnInit {
     this.loadScreen();
   }
 
+  nextPage(): void {
+    this.page += 1;
+    this.loadScreen();
+  }
+
+  previousPage(): void {
+    this.page -= 1;
+    this.loadScreen();
+  }
+
   async loadScreen(): Promise<void> {
     try {
       this.isLoading = true;
@@ -89,16 +107,14 @@ export class ProductsComponent implements OnInit {
   }
 
   async findProducts(): Promise<void> {
-    this.resetPage();
-
     const response = await this.findProductsUseCase.execute({
       productId: this.searchForm.value.productId,
       description: this.searchForm.value.description,
       cost: NumberMaskConverterUtils.convertMaskToNumber(
         this.searchForm.value.cost,
       ),
-      page: this.#page,
-      perPage: this.#perPage,
+      page: this.page,
+      perPage: this.perPage,
     });
 
     if (response.isLeft()) {
@@ -110,13 +126,18 @@ export class ProductsComponent implements OnInit {
   }
 
   resetPage(): void {
-    this.#page = 1;
+    this.page = 1;
   }
 
+  searchFormSubscription?: Subscription;
+
   listenSearchForm(): void {
-    this.searchForm.valueChanges
+    if (this.searchFormSubscription) return;
+
+    this.searchFormSubscription = this.searchForm.valueChanges
       .pipe(debounceTime(300), distinctUntilChanged())
       .subscribe((_) => {
+        this.resetPage();
         this.findProducts();
       });
   }

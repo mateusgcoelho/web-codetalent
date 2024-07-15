@@ -292,12 +292,13 @@ export class CreateProductComponent implements OnInit {
     this.image = undefined;
   }
 
-  showDialogSalePrice(): void {
+  showDialogSalePrice(salePrice?: SalePrice): void {
     const dialogRef = this.dialogService.open(CreateSalePriceComponent, {
       maxHeight: 400,
       data: {
         productId: this.productIdParam,
         supermarketOptions: this.supermarketsOptions,
+        salePrice: salePrice,
       },
     });
 

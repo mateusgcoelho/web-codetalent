@@ -7,6 +7,8 @@ import player from 'lottie-web';
 import {
   ArrowBigLeftDash,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Edit,
   ImageUp,
   LucideAngularModule,
@@ -34,6 +36,8 @@ export const appConfig: ApplicationConfig = {
         Save,
         ArrowBigLeftDash,
         ImageUp,
+        ChevronRight,
+        ChevronLeft,
         X,
         ChevronDown,
         TriangleAlert,

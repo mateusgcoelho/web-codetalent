@@ -4,22 +4,24 @@ import { Either, left, right } from '../../core/either/either';
 import { InfraError } from '../../core/infra/errors/infra.error';
 import ProductRepository from '../../domain/repositories/product.repository';
 
-type InputDeleteProduct = {
+export type InputUpdateSalePrice = {
   productId: number;
+  supermarketId: number;
+  salePrice: number;
 };
 
 @Injectable()
-export default class DeleteProductUseCase {
+export default class UpdateSalePriceUseCase {
   constructor(
     @Inject('ProductRepository')
     private readonly productRepository: ProductRepository,
   ) {}
 
   async execute(
-    input: InputDeleteProduct,
+    input: InputUpdateSalePrice,
   ): Promise<Either<ApplicationError, null>> {
     try {
-      await this.productRepository.deleteProduct(input.productId);
+      await this.productRepository.updateSalePrice(input);
 
       return right(null);
     } catch (error) {
@@ -27,7 +29,9 @@ export default class DeleteProductUseCase {
         return left(new ApplicationError(error.message));
       }
 
-      return left(new ApplicationError('Não foi possível excluir produto.'));
+      return left(
+        new ApplicationError('Não foi possível editar preço de venda.'),
+      );
     }
   }
 }
