@@ -11,7 +11,7 @@ export default class SupermarketRepositoryApi implements SupermarketRepository {
   ) {}
 
   async findAll(): Promise<Supermarket[]> {
-    const response = await this.httpClient.get(`/supermarkets`);
+    const response = await this.httpClient.get(`/api/v1/supermarkets`);
 
     return response.data['supermarkets'].map(
       (json: any) => new Supermarket(json['id'], json['description']),

@@ -103,7 +103,9 @@ export class CreateProductComponent implements OnInit {
     image: this.formBuilderService.control(''),
   });
 
-  getFormControl(value: 'cost' | 'description' | 'productId'): FormControl {
+  getFormControl(
+    value: 'cost' | 'description' | 'productId' | 'image',
+  ): FormControl {
     return this.productForm.controls[value];
   }
 
@@ -112,7 +114,7 @@ export class CreateProductComponent implements OnInit {
   product?: Product;
   salesPrices: SalePrice[] = [];
   supermarkets: Supermarket[] = [];
-  image?: File;
+  image?: File | null = undefined;
 
   get supermarketsOptions(): SelectOptionModel<number>[] {
     return this.supermarkets.map((supermarket) => {
@@ -226,6 +228,9 @@ export class CreateProductComponent implements OnInit {
   }
 
   async updateProduct(): Promise<void> {
+    console.log(' p ' + this.product?.image);
+    console.log(' p ' + this.image);
+    console.log(this.image ?? (this.product?.image ? null : undefined));
     const response = await this.updateProductUseCase.execute({
       productId: this.product!.id,
       description: this.productForm.value.description!,
@@ -234,7 +239,7 @@ export class CreateProductComponent implements OnInit {
             this.productForm.value.cost,
           )
         : null,
-      image: this.image,
+      image: this.image ?? (this.product?.image ? null : undefined),
     });
 
     if (response.isLeft()) {
@@ -289,7 +294,7 @@ export class CreateProductComponent implements OnInit {
   removePhoto(): void {
     this.fileInput.nativeElement.value = '';
     this.productForm.controls.image.reset();
-    this.image = undefined;
+    this.image = null;
   }
 
   showDialogSalePrice(salePrice?: SalePrice): void {

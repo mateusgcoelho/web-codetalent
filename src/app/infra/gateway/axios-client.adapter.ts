@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
+import { environment } from '../../../environments/environment';
 import ApiError from '../errors/api.error';
 import NetworkError from '../errors/network.error';
 import {
@@ -10,7 +11,7 @@ import {
 @Injectable()
 export class AxiosClientAdapter implements IHttpClient {
   client: AxiosInstance = axios.create({
-    baseURL: 'http://localhost:3001/api/v1',
+    baseURL: environment.apiUrl,
   });
 
   async delete(url: string, config?: IHttpClientConfig): Promise<any> {

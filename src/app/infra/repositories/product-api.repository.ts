@@ -19,7 +19,7 @@ export default class ProductRepositoryApi implements ProductRepository {
 
   async updateSalePrice(input: InputUpdateSalePrice): Promise<void> {
     await this.httpClient.put(
-      `/products/${input.productId}/sale-price/${input.supermarketId}`,
+      `/api/v1/products/${input.productId}/sale-price/${input.supermarketId}`,
       {
         salePrice: input.salePrice,
       },
@@ -31,37 +31,24 @@ export default class ProductRepositoryApi implements ProductRepository {
     supermarketId: number,
   ): Promise<void> {
     await this.httpClient.delete(
-      `/products/${productId}/sale-price/${supermarketId}`,
+      `/api/v1/products/${productId}/sale-price/${supermarketId}`,
     );
   }
 
   async updateProduct(input: InputUpdateProduct): Promise<void> {
-    const formData = new FormData();
-
-    if (input.description) {
-      formData.append('description', input.description);
-    }
-
-    if (input.image) {
-      formData.append('image', input.image!);
-    }
-
-    if (input.cost) {
-      formData.append('cost', input.cost.toString());
-    }
-
-    await this.httpClient.put(`/products/${input.productId}`, input, {
+    console.log(input);
+    await this.httpClient.put(`/api/v1/products/${input.productId}`, input, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
   }
 
   async deleteProduct(productId: number): Promise<void> {
-    await this.httpClient.delete(`/products/${productId}`);
+    await this.httpClient.delete(`/api/v1/products/${productId}`);
   }
 
   async assignSalePrice(input: InputAssignSalePriceProduct): Promise<void> {
     await this.httpClient.post(
-      `/products/${input.productId}/sale-price/${input.supermarketId}`,
+      `/api/v1/products/${input.productId}/sale-price/${input.supermarketId}`,
       {
         salePrice: input.salePrice,
       },
@@ -69,25 +56,13 @@ export default class ProductRepositoryApi implements ProductRepository {
   }
 
   async getProduct(productId: number): Promise<OutputGetProduct> {
-    const response = await this.httpClient.get(`/products/${productId}`);
+    const response = await this.httpClient.get(`/api/v1/products/${productId}`);
 
     return OutputGetProduct.fromJson(response.data);
   }
 
   async create(input: InputCreateProduct): Promise<Product> {
-    const formData = new FormData();
-
-    formData.append('description', input.description);
-
-    if (input.image) {
-      formData.append('image', input.image!);
-    }
-
-    if (input.cost) {
-      formData.append('cost', input.cost.toString());
-    }
-
-    const response = await this.httpClient.post('/products', input, {
+    const response = await this.httpClient.post('/api/v1/products', input, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
 
@@ -116,7 +91,7 @@ export default class ProductRepositoryApi implements ProductRepository {
       queryParams.price = filter.price;
     }
 
-    const response = await this.httpClient.get('/products', {
+    const response = await this.httpClient.get('/api/v1/products', {
       params: queryParams,
     });
 
